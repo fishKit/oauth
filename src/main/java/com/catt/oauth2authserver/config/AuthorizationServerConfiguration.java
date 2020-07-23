@@ -1,9 +1,9 @@
 package com.catt.oauth2authserver.config;
 
+import com.catt.oauth2authserver.service.MyUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.oauth2.config.annotation.configurers.ClientDetailsServiceConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.AuthorizationServerConfigurerAdapter;
@@ -25,21 +25,20 @@ import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenCo
 public class AuthorizationServerConfiguration extends AuthorizationServerConfigurerAdapter {
     @Autowired
     AuthenticationManager authenticationManager;
-
     /*@Autowired
     RedisConnectionFactory redisConnectionFactory;*/
-
     @Autowired
     private TokenStore tokenStore;
     @Autowired
     private JwtAccessTokenConverter jwtAccessTokenConverter;
+    /*@Autowired
+    private UserDetailsService userDetailsService;*/
     @Autowired
-    private UserDetailsService userDetailsService;
+    private MyUserDetailsService userDetailsService;
 
     @Override
     public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
         String finalSecret = "{bcrypt}" + new BCryptPasswordEncoder().encode("123456");
-
         // 配置两个客户端，一个用于password认证一个用于client认证
         clients.inMemory()
                 .withClient("client_1")
@@ -48,13 +47,15 @@ public class AuthorizationServerConfiguration extends AuthorizationServerConfigu
                 .scopes("select")
                 .authorities("oauth2")
                 .secret(finalSecret)
+                .accessTokenValiditySeconds(3600)
                 .and()
                 .withClient("client_2")
                 .resourceIds(Utils.RESOURCEIDS.ORDER)
                 .authorizedGrantTypes("password", "refresh_token")
                 .scopes("server")
                 .authorities("oauth2")
-                .secret(finalSecret);
+                .secret(finalSecret)
+                .accessTokenValiditySeconds(3600);
     }
 
     @Override
