@@ -14,6 +14,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * @description:
@@ -42,10 +43,10 @@ public class JwtTokenConfig {
                 //role
                 Collection<GrantedAuthority> roleList = authentication.getAuthorities();
                 // 自定义一些token 信息
-                Map<String, Object> additionalInformation = new HashMap<String, Object>(16);
+                Map<String, Object> additionalInformation = new HashMap<>(16);
                 additionalInformation.put("user_name", userName);
                 additionalInformation.put("我的juju", "xiaxia");
-                additionalInformation.put("roleList", roleList);
+                additionalInformation.put("roleList", roleList.stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList()));
                 additionalInformation = Collections.unmodifiableMap(additionalInformation);
                 ((DefaultOAuth2AccessToken) accessToken).setAdditionalInformation(additionalInformation);
                 OAuth2AccessToken token = super.enhance(accessToken, authentication);
