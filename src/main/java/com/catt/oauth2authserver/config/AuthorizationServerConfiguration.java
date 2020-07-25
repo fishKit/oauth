@@ -3,6 +3,7 @@ package com.catt.oauth2authserver.config;
 import com.catt.oauth2authserver.service.MyUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.oauth2.config.annotation.configurers.ClientDetailsServiceConfigurer;
@@ -43,11 +44,12 @@ public class AuthorizationServerConfiguration extends AuthorizationServerConfigu
         clients.inMemory()
                 .withClient("client_1")
                 .resourceIds(Utils.RESOURCEIDS.ORDER)
-                .authorizedGrantTypes("client_credentials", "refresh_token")
+                .authorizedGrantTypes("authorization_code", "refresh_token")
                 .scopes("select")
                 .authorities("oauth2")
                 .secret(finalSecret)
                 .accessTokenValiditySeconds(3600)
+                .redirectUris("http://baidu.com")
                 .and()
                 .withClient("client_2")
                 .resourceIds(Utils.RESOURCEIDS.ORDER)
@@ -66,7 +68,8 @@ public class AuthorizationServerConfiguration extends AuthorizationServerConfigu
         endpoints.tokenStore(tokenStore)
                 .authenticationManager(authenticationManager)
                 .userDetailsService(userDetailsService)
-                .accessTokenConverter(jwtAccessTokenConverter);
+                //获取token开放GET方式
+                .accessTokenConverter(jwtAccessTokenConverter).allowedTokenEndpointRequestMethods(HttpMethod.GET, HttpMethod.POST);
     }
 
     @Override

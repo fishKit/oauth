@@ -44,7 +44,7 @@ public class JwtTokenConfig {
                 // 自定义一些token 信息
                 Map<String, Object> additionalInformation = new HashMap<String, Object>(16);
                 additionalInformation.put("user_name", userName);
-                additionalInformation.put("我得juju", "xiaxia");
+                additionalInformation.put("我的juju", "xiaxia");
                 additionalInformation.put("roleList", roleList);
                 additionalInformation = Collections.unmodifiableMap(additionalInformation);
                 ((DefaultOAuth2AccessToken) accessToken).setAdditionalInformation(additionalInformation);
